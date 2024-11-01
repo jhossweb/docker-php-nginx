@@ -1,0 +1,14 @@
+{
+    "name": "jhoss/web",
+    "autoload": {
+        "psr-4": {
+            "Jhoss\\Web\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "JhossWeb"
+        }
+    ],
+    "require": {}
+}
