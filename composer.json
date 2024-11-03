@@ -2,7 +2,7 @@
     "name": "jhoss/web",
     "autoload": {
         "psr-4": {
-            "Jhoss\\Web\\": "src/"
+            "App\\": "src/"
         }
     },
     "authors": [
@@ -10,5 +10,8 @@
             "name": "JhossWeb"
         }
     ],
-    "require": {}
+    "require": {
+        "slim/slim": "4.*",
+        "slim/psr7": "^1.7"
+    }
 }
