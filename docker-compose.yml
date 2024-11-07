@@ -36,6 +36,25 @@ services:
     networks:
       - php_nginx
 
+  db:
+    container_name: postgres_nginx
+    image: postgres:16.3
+    environment:
+      POSTGRES_DB: ${PG_DBNAME}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASS}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - php_nginx
+    restart: unless-stopped
+
 networks:
   php_nginx:
     driver: bridge
+
+volumes:
+  postgres:

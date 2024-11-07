@@ -15,7 +15,6 @@ class AppServer
         $this->middlewares();
         $this->router();
         $this->app->run();
-        echo "constructor";
     }
 
     private function middlewares () {
