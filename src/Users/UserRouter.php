@@ -15,5 +15,6 @@ class UserRouter extends BaseRouter
     function routes()
     {
         $this->router->get("/", fn($req, $res) => $this->controller->index($req, $res));
+        $this->router->get("/users", fn($req, $res) => $this->controller->create($req, $res));
     }
 }

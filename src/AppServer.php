@@ -11,9 +11,10 @@ class AppServer
 
     function __construct() {
         $this->app = AppFactory::create();
-
+        
         $this->middlewares();
         $this->router();
+        echo constant('DB_HOST');
         $this->app->run();
     }
 

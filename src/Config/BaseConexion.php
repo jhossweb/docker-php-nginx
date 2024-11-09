@@ -11,11 +11,11 @@ class BaseConexion
 
     function __construct()
     {
-        $this->host = "localhost";
-        $this->username = "jhossweb";
-        $this->password = "secret";
-        $this->port = 5432;
-        $this->dbname = "dbpruebas";
+        $this->host = constant('DB_HOST');
+        $this->username = constant('DB_USER');
+        $this->password = constant('DB_PASS');
+        $this->port = constant('DB_PORT');
+        $this->dbname = constant('DB_DBNAME');
         
         $this->dns = "pgsql:host=$this->host;dbname=$this->dbname";
 
@@ -25,6 +25,7 @@ class BaseConexion
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ];
             $this->conexion = new PDO($this->dns, $this->username, $this->password, $options);
+            echo "conexión correcta";
         } catch(\Exception $e) {
             die ("Error de conexión. " . $e->getMessage());
         }

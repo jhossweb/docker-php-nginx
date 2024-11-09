@@ -2,9 +2,20 @@
 
 namespace App\Users\Repository;
 
-class UserRepositroy
+use App\Config\BaseConexion;
+use App\Utils\Repository;
+
+class UserRepository implements Repository
 {
-    function __construct(
-        private 
-    ){}
+    private $db;
+
+    function __construct()
+    {
+        $this->db = BaseConexion::getInstace()->getConexion();    
+    }
+
+    function create(array $data)
+    {
+        var_dump($data);
+    }
 }
