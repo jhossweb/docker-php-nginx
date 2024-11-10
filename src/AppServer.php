@@ -14,7 +14,6 @@ class AppServer
         
         $this->middlewares();
         $this->router();
-        echo constant('DB_HOST');
         $this->app->run();
     }
 

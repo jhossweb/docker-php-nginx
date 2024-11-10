@@ -2,20 +2,30 @@
 
 namespace App\Users\Repository;
 
-use App\Config\BaseConexion;
+use App\Utils\Model;
 use App\Utils\Repository;
 
-class UserRepository implements Repository
+class UserRepository extends Model implements Repository
 {
-    private $db;
+    protected $table = "users";
 
-    function __construct()
-    {
-        $this->db = BaseConexion::getInstace()->getConexion();    
+    function findRepository () {
+        return $this->find();
     }
 
-    function create(array $data)
-    {
-        var_dump($data);
+    function createRepository(array $data) {
+        
+        $data["pass"] = password_hash($data["pass"], PASSWORD_DEFAULT);
+
+        $user = $this->create($data);
+        return $user;
+    }
+
+    function updateRepository ($id, $data) {
+        return $this->update($id, $data);
+    }
+
+    function deleteRepository(string|int $id) {
+        return $this->delete($id);
     }
 }

@@ -25,7 +25,7 @@ class BaseConexion
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ];
             $this->conexion = new PDO($this->dns, $this->username, $this->password, $options);
-            echo "conexión correcta";
+            
         } catch(\Exception $e) {
             die ("Error de conexión. " . $e->getMessage());
         }
