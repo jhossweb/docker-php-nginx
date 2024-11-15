@@ -23,6 +23,17 @@ class UserController
        return $res;
     }
 
+    function findWithRelationController(Request $req, Response $res, array $args) {
+        
+        $user = $this->userRepository->findWithRelationRepository($args['id'], "profile", "user_id");
+        
+        $res->getBody()->write(json_encode($user));
+        $res
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus(200);
+        return $res; 
+    }
+
     function create(Request $req, Response $res) {
        
         $user_id = $this->userRepository->createRepository($req->getParsedBody());

@@ -16,8 +16,8 @@ class UserRepository extends Model implements Repository
     function createRepository(array $data) {
         
         $data["pass"] = password_hash($data["pass"], PASSWORD_DEFAULT);
-
         $user = $this->create($data);
+        //$user = $this->createWithRelation($data, ["biography" => "hola mundo"], 'profile', 'user_id');
         return $user;
     }
 
@@ -28,4 +28,8 @@ class UserRepository extends Model implements Repository
     function deleteRepository(string|int $id) {
         return $this->delete($id);
     }
+
+    function findWithRelationRepository (int|string $id, string $relationTable, string $foreignKey) {
+        return $this->findWithRelation($id, $relationTable, $foreignKey);
+    }  
 }

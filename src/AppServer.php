@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Profiles\ProfileRouter;
 use App\Users\UserRouter;
 use Slim\Factory\AppFactory;
 
@@ -23,5 +24,6 @@ class AppServer
 
     function router() {
         (new UserRouter($this->app))->router;
+        (new ProfileRouter($this->app))->router;
     }
 }
