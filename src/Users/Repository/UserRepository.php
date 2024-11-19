@@ -13,6 +13,20 @@ class UserRepository extends Model implements Repository
         return $this->find();
     }
 
+    function findByRepository(int|string|array $id)
+    {
+        return $this->findBy($id);
+    }
+
+    function findByUsernameRepository(string $username)
+    {
+        return $this->findByUsername($username);
+    }
+
+    function findWithRelationRepository (int|string $id, string $relationTable, string $foreignKey) {
+        return $this->findWithRelation($id, $relationTable, $foreignKey);
+    }
+
     function createRepository(array $data) {
         
         $data["pass"] = password_hash($data["pass"], PASSWORD_DEFAULT);
@@ -27,9 +41,5 @@ class UserRepository extends Model implements Repository
 
     function deleteRepository(string|int $id) {
         return $this->delete($id);
-    }
-
-    function findWithRelationRepository (int|string $id, string $relationTable, string $foreignKey) {
-        return $this->findWithRelation($id, $relationTable, $foreignKey);
-    }  
+    }     
 }

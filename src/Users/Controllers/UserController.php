@@ -13,10 +13,21 @@ class UserController
         private UserRepository $userRepository = new UserRepository
     ){}
 
+
     function index (Request $req, Response $res) {
         $users = $this->userRepository->findRepository();
         
         $res->getBody()->write(json_encode($users));
+        $res
+           ->withHeader('Content-Type', 'application/json')
+           ->withStatus(200);
+       return $res;
+    }
+
+    function findByController(Request $req, Response $res, array $args) {
+        $userBy = $this->userRepository->findBy($args["id"]);
+
+        $res->getBody()->write(json_encode($userBy));
         $res
            ->withHeader('Content-Type', 'application/json')
            ->withStatus(200);

@@ -25,6 +25,31 @@ class Model
         return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    function findBy( int|string|array $id ) {
+        $sql = "SELECT * FROM {$this->table} WHERE id = :id";
+
+        $type = is_int($id) ? PDO::PARAM_INT : PDO::PARAM_STR;
+        $stm = $this->db->prepare($sql);
+        $stm->bindParam(":id", $id, $type);
+        $stm->execute();
+
+        return $stm->fetch(PDO::FETCH_ASSOC);
+    }
+
+    function findByUsername(string $username) {
+        $sql = "SELECT id, username, pass FROM {$this->table} WHERE username = :username LIMIT 1";
+        
+        $stm = $this->db->prepare($sql);
+        $stm->bindParam(":username", $username, PDO::PARAM_STR);
+        $stm->execute();
+
+        $row = $stm->fetch(PDO::FETCH_ASSOC);
+
+        if(!$row) return false;
+
+        return $row;
+    }
+    
     function create(array $data)
     {
         $columns = array_keys($data);

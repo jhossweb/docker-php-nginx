@@ -14,6 +14,6 @@ class ProfileRouter extends BaseRouter
 
     function routes()
     {
-        $this->router->get("/profile", fn($req, $res) => $this->controller->index($req, $res));
+        $this->router->get("/profile/{id}", fn($req, $res, $args) => $this->controller->index($req, $res, $args));
     }
 }
