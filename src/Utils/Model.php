@@ -8,139 +8,113 @@ use PDOException;
 
 class Model
 {
-    private $db;
-    protected $table;
+    protected $db, $query ;
 
-    function __construct()
+    function __construct(protected $table)
     {
         $this->db = BaseConexion::getInstace()->getConexion();    
     }
 
-    function find() {
-        $sql = "SELECT * FROM {$this->table}";
-
-        $stm = $this->db->prepare($sql);
-        $stm->execute();
-
-        return $stm->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    function findBy( int|string|array $id ) {
-        $sql = "SELECT * FROM {$this->table} WHERE id = :id";
-
-        $type = is_int($id) ? PDO::PARAM_INT : PDO::PARAM_STR;
-        $stm = $this->db->prepare($sql);
-        $stm->bindParam(":id", $id, $type);
-        $stm->execute();
-
-        return $stm->fetch(PDO::FETCH_ASSOC);
-    }
-
-    function findByUsername(string $username) {
-        $sql = "SELECT id, username, pass FROM {$this->table} WHERE username = :username LIMIT 1";
-        
-        $stm = $this->db->prepare($sql);
-        $stm->bindParam(":username", $username, PDO::PARAM_STR);
-        $stm->execute();
-
-        $row = $stm->fetch(PDO::FETCH_ASSOC);
-
-        if(!$row) return false;
-
-        return $row;
-    }
-    
-    function create(array $data)
+    function query ($sql, $data = [], $params = null) 
     {
+        if($data){
+
+            /* substr_count = cuenta cuando ? hay en la consulta */
+            $numSignos = substr_count($sql, "?");
+            
+            $this->query = $this->db->prepare($sql);
+            
+            foreach($data as $key => $value) {
+                $type = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+                $this->query->bindParam($key + 1, $data[$key], $type);
+            }
+
+            $this->query->bindParam(1, $data[0], PDO::PARAM_STR);
+            $this->query->execute();
+
+        } else {
+            $this->query = $this->db->prepare($sql);
+            $this->query->execute();
+        }
+
+        return $this;
+    }
+
+    function first ()
+    {
+        return $this->query->fetch(PDO::FETCH_ASSOC);
+    }
+
+    function get()
+    {
+        return $this->query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    
+    /** Consultas  */
+    function all ()
+    {
+        $sql = "SELECT * FROM {$this->table}";
+        return $this->query($sql)->get();
+    }
+
+    function findOne (int|string $id)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE id = ?";
+        return $this->query($sql, [$id])->first();
+    }
+
+    function create(array $data) {
         $columns = array_keys($data);
         $columns = implode(', ', $columns);
 
         $values = array_values($data);
+
+        $sql = "INSERT INTO {$this->table} ({$columns}) VALUES (" . str_repeat('?, ', count($values) - 1) . "?)";
         
-        $sql = "INSERT INTO {$this->table} ({$columns}) VALUES (". str_repeat('?, ', count($values) -1) . "?)";
-        
-        $stm = $this->db->prepare($sql);
-        $stm->bindParam(1, $values[0], PDO::PARAM_STR);
-        $stm->bindParam(2, $values[1], PDO::PARAM_STR);
-        $stm->execute();
+        $this->query($sql, $values);
 
         $user_id = $this->db->lastInsertId();
-        return $user_id;
+        return $this->findOne($user_id);
     }
 
-    function update (string|int $id, array $data){
+    function update( int|string $id, array $data, string $foreignKey) 
+    {
         $columns = array_keys($data);
-        $setPart = implode(', ', array_map(
-            fn ($column) => "{$column} = ?", $columns
-        ));
+        $setClause = implode(' = ?, ', $columns) . ' = ?';
         $values = array_values($data);
         $values[] = $id;
 
-        $sql = "UPDATE {$this->table} SET {$setPart} WHERE id = ?";
-        $stm = $this->db->prepare($sql);
+        $sql = "UPDATE {$this->table} SET {$setClause} WHERE {$foreignKey} = ?";
+        $this->query($sql, $values);
 
-        foreach ($values as $index => $value) {
-            $stm->bindValue($index + 1, $value);
+        return $this->query->rowCount();
+    }
+
+    function where ($colum, $operator, $value = null) {
+        if($value == null) {
+            $value = $operator;
+            $operator = "=";
         }
-        $stm->execute();
-        return $stm->rowCount();
+
+        $sql = "SELECT * FROM {$this->table} WHERE {$colum} {$operator} ?";
+        $this->query($sql, [$value]);
+
+        return $this;
     }
 
-    function delete (int|string $id) {
-        $sql = "DELETE FROM {$this->table} WHERE id = :id";
-        $stm = $this->db->prepare($sql);
-        $stm->bindParam(":id", $id, PDO::PARAM_INT);
-        $stm->execute();
-
-        return $stm->rowCount();
+    function hasOne ($relationModel, $relationTable, $foreignKey) 
+    {
+        /*$sql = "SELECT * FROM {$relationModel->table} WHERE {$foreignKey} = ?";
+        return $relationModel->query($sql, [$this->$localKey])->first();*/
     }
 
-    function findWithRelation( int|string $id, string $relationTable, string $foreignKey) {
-        $sql = "SELECT * FROM {$this->table} 
-                LEFT JOIN {$relationTable} 
-                ON {$this->table}.id = {$relationTable}.{$foreignKey}
-                WHERE {$this->table}.id = :id
-                ";
-        $stm = $this->db->prepare($sql);
-        $type = is_int($id) ? PDO::PARAM_INT : PDO::PARAM_STR;
-        $stm->bindParam(":id", $id, $type);
-        $stm->execute();
-
-        return $stm->fetch(PDO::FETCH_ASSOC);        
-    }
-
-    function createWithRelation (
-        array $data,
-        array $relationData, 
-        string $relationTable,
-        string $foreignKey
-    ) {
-        try {
-            $this->db->beginTransaction();
-
-            $mainId = $this->create($data);
-
-            $relationData[$foreignKey] = $mainId;
-
-            $columns = array_keys($relationData);
-            $columns = implode(', ', $columns);
-            $values = array_values($relationData);
-            
-            $sql = "INSERT INTO {$relationTable} ({$columns}) VALUES (" . str_repeat('?, ', count($values) -1) . "?)";
-            
-            $stm = $this->db->prepare($sql);
-            foreach($values as $index => $value) {
-                
-                $type = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
-                $stm->bindValue($index + 1, $value, $type);
-            }
-            $stm->execute();
-
-            $this->db->commit();
-            return $mainId;
-        } catch (PDOException $e) {
-            $this->db->rollBack();
-            throw $e;
-        }
+    function belognsTo (int|string $id, $relationTable, $foreignKey) {
+        $sql = "SELECT * FROM 
+        {$this->table} LEFT JOIN {$relationTable} ON {$this->table}.{$foreignKey} = {$relationTable}.id
+        WHERE {$foreignKey} = ?";
+        
+        $this->query($sql, [$id])->first();
+        return $this;
     }
 }

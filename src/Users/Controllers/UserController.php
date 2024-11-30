@@ -10,12 +10,13 @@ class UserController
 {
 
     function __construct(
+        
         private UserRepository $userRepository = new UserRepository
     ){}
 
 
     function index (Request $req, Response $res) {
-        $users = $this->userRepository->findRepository();
+        $users = $this->userRepository->findAll();
         
         $res->getBody()->write(json_encode($users));
         $res
@@ -25,7 +26,7 @@ class UserController
     }
 
     function findByController(Request $req, Response $res, array $args) {
-        $userBy = $this->userRepository->findBy($args["id"]);
+        $userBy = $this->userRepository->findByRepository($args["id"]);
 
         $res->getBody()->write(json_encode($userBy));
         $res
@@ -34,20 +35,21 @@ class UserController
        return $res;
     }
 
-    function findWithRelationController(Request $req, Response $res, array $args) {
+    // function findWithRelationController(Request $req, Response $res, array $args) {
         
-        $user = $this->userRepository->findWithRelationRepository($args['id'], "profile", "user_id");
+    //     $user = $this->userRepository->findWithRelationRepository($args['id'], "profile", "user_id");
         
-        $res->getBody()->write(json_encode($user));
-        $res
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
-        return $res; 
-    }
+    //     $res->getBody()->write(json_encode($user));
+    //     $res
+    //         ->withHeader('Content-Type', 'application/json')
+    //         ->withStatus(200);
+    //     return $res; 
+    // }
 
     function create(Request $req, Response $res) {
        
         $user_id = $this->userRepository->createRepository($req->getParsedBody());
+        
 
        $res->getBody()->write(json_encode($user_id));
        $res
@@ -56,25 +58,25 @@ class UserController
        return $res;
     }
 
-    function update(Request $req, Response $res, array $args) {
-        $id = $args["id"];
-        $userUpdated = $this->userRepository->update($id, $req->getParsedBody());
+    // function update(Request $req, Response $res, array $args) {
+    //     $id = $args["id"];
+    //     $userUpdated = $this->userRepository->update($id, $req->getParsedBody());
 
-        $res->getBody()->write(json_encode($userUpdated));
-        $res
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
-        return $res;
-    }
+    //     $res->getBody()->write(json_encode($userUpdated));
+    //     $res
+    //         ->withHeader('Content-Type', 'application/json')
+    //         ->withStatus(200);
+    //     return $res;
+    // }
 
-    function delete(Request $req, Response $res, array $args) {
-        $id = $args["id"];
+    // function delete(Request $req, Response $res, array $args) {
+    //     $id = $args["id"];
         
-        $userDelete = $this->userRepository->deleteRepository($id);
-        $res->getBody()->write(json_encode($userDelete));
-        $res
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
-        return $res;
-    }
+    //     $userDelete = $this->userRepository->deleteRepository($id);
+    //     $res->getBody()->write(json_encode($userDelete));
+    //     $res
+    //         ->withHeader('Content-Type', 'application/json')
+    //         ->withStatus(200);
+    //     return $res;
+    // }
 }

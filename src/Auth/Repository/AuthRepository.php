@@ -7,11 +7,16 @@ use App\Utils\Model;
 class AuthRepository extends Model
 {
 
-    protected $table = "users";
+//    protected $table = "users";
+
+    function __construct()
+    {
+        parent::__construct("users");
+    }
 
     function findByUsernameRepositroy(string|array $username)
     {
-        $userSeracrh = $this->findByUsername($username["username"]);
+        $userSeracrh = $this->where('username', '=',$username["username"])->first();
         
         if(!$userSeracrh) return "usuario no encontrado";
 

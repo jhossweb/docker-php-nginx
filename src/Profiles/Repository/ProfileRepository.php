@@ -2,13 +2,27 @@
 
 namespace App\Profiles\Repository;
 
+use App\Users\Repository\UserRepository;
 use App\Utils\Model;
 
 class ProfileRepository extends Model
 {
-    protected $table = "users";
+    //protected $table = "profile";
 
-    function findWithRelationRepository (int|string $id, string $relationTable, string $foreignKey) {
-        return $this->findWithRelation($id, $relationTable, $foreignKey);
+    function __construct()
+    {
+        parent::__construct("profile");
+    }
+
+    function findOneRepository (int|string $id) {
+        return $this->where("user_id", "=", $id)->first();
+    }
+
+    function updateProfileRepository(int|string $id, array $data) {
+        return $this->update($id, $data, "user_id");
+    }
+
+    function createProfileRepository( int|string $id) {
+        return $this->create(["user_id" => $id]);
     }
 }

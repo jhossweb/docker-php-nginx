@@ -14,7 +14,7 @@ trait AuthJwt
         $payload = [
             "data" => [
                 "id" => $id,
-                "email" => $username
+                "username" => $username
             ],
             "exp" => strtotime("+90 minutes")
         ];

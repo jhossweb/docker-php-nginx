@@ -3,7 +3,7 @@
 namespace App\Utils;
 
 interface Repository {
-    // function findAll();
+     function findAll();
     // function findBy( string|int $id );
-    function create(array $data);
+    //function create(array $data);
 }
