@@ -19,11 +19,11 @@ class ProfileController
 
     function index(Request $req, Response $res, array $args) {
                
-        $token = $req->getHeader("auth-token");
-        $validateToken = $this->validateToken($token[0]);
-        $profile = $this->profileRepository->findOneRepository($validateToken->data->id);
+        // $token = $req->getHeader("auth-token");
+        // $validateToken = $this->validateToken($token[0]);
+        // $profile = $this->profileRepository->findOneRepository($validateToken->data->id);
+        $profile = $this->profileRepository->getProfileWhithUser("users", "user_id", $args["id"]);
         
-
         $res->getBody()->write(json_encode($profile));
         $res
            ->withHeader('Content-Type', 'application/json')

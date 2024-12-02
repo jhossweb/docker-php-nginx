@@ -103,18 +103,16 @@ class Model
         return $this;
     }
 
-    function hasOne ($relationModel, $relationTable, $foreignKey) 
+    function withRelation ($relationTable, $foreignKey, $localKey, array $columns = ['*']) 
     {
-        /*$sql = "SELECT * FROM {$relationModel->table} WHERE {$foreignKey} = ?";
-        return $relationModel->query($sql, [$this->$localKey])->first();*/
-    }
+        $columns = implode(', ', $columns);
 
-    function belognsTo (int|string $id, $relationTable, $foreignKey) {
-        $sql = "SELECT * FROM 
-        {$this->table} LEFT JOIN {$relationTable} ON {$this->table}.{$foreignKey} = {$relationTable}.id
+        $sql = "SELECT {$columns} FROM {$this->table}
+        LEFT JOIN {$relationTable} ON {$this->table}.{$foreignKey} = {$relationTable}.id
         WHERE {$foreignKey} = ?";
         
-        $this->query($sql, [$id])->first();
-        return $this;
+        return $this->query($sql, [$localKey])->first();
     }
+
+    
 }

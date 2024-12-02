@@ -4,6 +4,7 @@ namespace App\Profiles;
 
 use App\Config\BaseRouter;
 use App\Profiles\Controllers\ProfileController;
+use App\Utils\Middlewares\TokenMiddleware;
 
 class ProfileRouter extends BaseRouter
 {
@@ -14,7 +15,7 @@ class ProfileRouter extends BaseRouter
 
     function routes()
     {
-        $this->router->get("/profile/{id}", fn($req, $res, $args) => $this->controller->index($req, $res, $args));
+        $this->router->get("/profile/{id}", fn($req, $res, $args) => $this->controller->index($req, $res, $args))->add(new TokenMiddleware);
         $this->router->put("/profile/{id}", fn($req, $res, $args) => $this->controller->updateProfileController($req, $res, $args));
     }
 }

@@ -25,4 +25,8 @@ class ProfileRepository extends Model
     function createProfileRepository( int|string $id) {
         return $this->create(["user_id" => $id]);
     }
+
+    function getProfileWhithUser(string $relationTable, string $foreingKey, int|string $id) {
+        return $this->withRelation($relationTable, $foreingKey, $id);
+    }
 }
