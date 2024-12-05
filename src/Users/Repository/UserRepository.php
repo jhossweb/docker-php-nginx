@@ -29,9 +29,14 @@ class UserRepository extends Model implements Repository
         return $this->where('username', '=', $username)->first();
     }
 
-    // function findWithRelationRepository (int|string $id, string $relationTable, string $foreignKey) {
-    //     return $this->findWithRelation($id, $relationTable, $foreignKey);
-    // }
+    function findWithRelationRepository (string $relationTable, string $foreignKey, int|string $id) {
+        $sql = "SELECT * FROM {$this->table} 
+                LEFT JOIN {$relationTable} 
+                ON {$this->table}.id = {$relationTable}.{$foreignKey}
+                WHERE {$this->table}.id = ?";
+                
+        return $this->query($sql, [$id])->first();
+    }
 
      function createRepository(array $data) {
         
@@ -42,9 +47,9 @@ class UserRepository extends Model implements Repository
          return $user;
      }
 
-    // function updateRepository ($id, $data) {
-    //     return $this->update($id, $data);
-    // }
+    function updateRepository ($id, $data) {
+        return $this->update($id, $data, "id");
+    }
 
     // function deleteRepository(string|int $id) {
     //     return $this->delete($id);

@@ -11,20 +11,23 @@ use Slim\Psr7\Response;
 
 class TokenMiddleware
 {
-    private $key = "jhossweb";
+    private $key;
 
     function __invoke(Request $req, RequestHandler $handler)
     {
         $token = $req->getHeaderLine("auth-token");
-        if(empty($token)) return new Response("no existe token");
+        $this->key = constant("AUTH_JWT");
+
+        if(empty($token)) return new Response(StatusCodeInterface::STATUS_UNAUTHORIZED);
 
         try {
             
             $decode = JWT::decode($token, new Key($this->key, 'HS256'));
-            var_dump($decode);
+            
             $request = $req->withAttribute("id", $decode->data->id);
             $request = $req->withAttribute("username", $decode->data->username);
 
+            //echo constant("AUTH_JWT");
         } catch (\Exception $e) {
             return new Response (StatusCodeInterface::STATUS_UNAUTHORIZED);
         }

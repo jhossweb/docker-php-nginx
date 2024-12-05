@@ -106,7 +106,7 @@ class Model
     function withRelation ($relationTable, $foreignKey, $localKey, array $columns = ['*']) 
     {
         $columns = implode(', ', $columns);
-
+        
         $sql = "SELECT {$columns} FROM {$this->table}
         LEFT JOIN {$relationTable} ON {$this->table}.{$foreignKey} = {$relationTable}.id
         WHERE {$foreignKey} = ?";
